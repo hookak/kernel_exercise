@@ -226,6 +226,9 @@ submit_io:
 		trace_f2fs_submit_read_bio(sbi->sb, type, bio);
 	else
 		trace_f2fs_submit_write_bio(sbi->sb, type, bio);
+
+	if(type == NODE)
+		bio->bi_opf |= REQ_NODE;
 	submit_bio(bio);
 }
 
