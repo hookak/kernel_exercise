@@ -2425,10 +2425,19 @@ void blk_account_io_completion(struct request *req, unsigned int bytes)
 		const int rw = rq_data_dir(req);
 		struct hd_struct *part;
 		int cpu;
+		u32 flags;
+
+		flags = req->cmd_flags;
 
 		cpu = part_stat_lock();
 		part = req->part;
 		part_stat_add(cpu, part, sectors[rw], bytes >> 9);
+		
+		if(flags & REQ_NODE)
+			part_stat_add(cpu, part, node[rw], bytes >> 9);
+		else if(flags & REQ_META)
+			part_stat_add(cpu, part, meta[rw], bytes >> 9);
+
 		part_stat_unlock();
 	}
 }
